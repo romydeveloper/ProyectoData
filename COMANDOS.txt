@@ -1,0 +1,170 @@
+====================================================================
+                    GUÍA COMPLETA DE COMANDOS - NOTES APP
+====================================================================
+
+🚀 INICIO RÁPIDO
+================
+# Opción 1: Scripts automáticos
+start.bat          # Windows
+./start.sh         # Linux/Mac
+
+# Opción 2: Docker Compose
+docker-compose up --build -d
+
+# Opción 3: Makefile
+make up
+
+🐳 DOCKER COMMANDS
+==================
+# Desarrollo
+make up                    # Levantar servicios
+make down                  # Detener servicios
+make build                 # Construir imágenes
+make logs                  # Ver logs en tiempo real
+make restart               # Reiniciar servicios
+make status                # Estado de servicios
+
+# Producción
+make prod                  # Levantar en modo producción
+docker-compose -f docker-compose.prod.yml up -d
+
+# Limpieza
+make clean                 # Limpiar todo (contenedores, imágenes, volúmenes)
+
+🧪 TESTING
+==========
+# Todos los tests
+make test                  # Makefile
+./run-tests.sh            # Linux/Mac
+run-tests.bat             # Windows
+
+# Tests específicos
+make test-backend          # Solo backend
+make test-frontend         # Solo frontend
+make test-coverage         # Con coverage
+
+# Comandos directos
+cd Backend && python -m pytest -v
+cd Frontend && npm test
+
+💻 DESARROLLO LOCAL
+===================
+# Backend (Terminal 1)
+cd Backend
+pip install -r requirements.txt
+uvicorn main:app --reload
+
+# Frontend (Terminal 2)
+cd Frontend
+npm install
+npm run dev
+
+🔧 LINTING Y FORMATEO
+=====================
+# Frontend
+cd Frontend
+npm run lint               # Verificar código
+npm run lint:fix           # Corregir automáticamente
+npm run format             # Formatear código
+
+# Backend (si tienes configurado)
+cd Backend
+python -m flake8          # Linting
+python -m black .         # Formateo
+
+📦 GESTIÓN DE DEPENDENCIAS
+==========================
+# Backend
+cd Backend
+pip install -r requirements.txt
+pip freeze > requirements.txt
+
+# Frontend
+cd Frontend
+npm install                # Instalar dependencias
+npm update                 # Actualizar dependencias
+npm audit                  # Verificar vulnerabilidades
+
+🌐 URLS DE ACCESO
+=================
+http://localhost:3000      # Frontend
+http://localhost:8000      # Backend API
+http://localhost:8000/docs # Documentación API
+http://localhost:8000/health # Health Check
+
+📊 MONITOREO
+============
+# Ver logs
+docker-compose logs -f backend
+docker-compose logs -f frontend
+make logs
+
+# Estado de servicios
+docker-compose ps
+make status
+
+# Recursos del sistema
+docker stats
+
+🔄 COMANDOS DE MANTENIMIENTO
+============================
+# Reiniciar solo un servicio
+docker-compose restart backend
+docker-compose restart frontend
+
+# Reconstruir un servicio específico
+docker-compose up --build backend
+docker-compose up --build frontend
+
+# Ver información de imágenes
+docker images
+docker system df          # Uso de espacio
+
+🚨 TROUBLESHOOTING
+==================
+# Limpiar caché de Docker
+docker system prune -a
+
+# Reiniciar Docker completamente
+make clean
+make up
+
+# Ver logs de errores
+docker-compose logs backend | grep ERROR
+docker-compose logs frontend | grep ERROR
+
+# Verificar conectividad
+curl http://localhost:8000/health
+curl http://localhost:3000
+
+📝 COMANDOS ÚTILES PARA DESARROLLO
+==================================
+# Instalar nueva dependencia (Frontend)
+cd Frontend && npm install nueva-libreria
+
+# Instalar nueva dependencia (Backend)
+cd Backend && pip install nueva-libreria
+pip freeze > requirements.txt
+
+# Ejecutar comando dentro del contenedor
+docker-compose exec backend python -c "print('Hello')"
+docker-compose exec frontend npm --version
+
+🎯 COMANDOS PARA ENTREGA
+========================
+# Verificar que todo funciona
+make test                  # Ejecutar todos los tests
+make up                    # Levantar aplicación
+curl http://localhost:8000/health  # Verificar backend
+curl http://localhost:3000         # Verificar frontend
+
+# Limpiar y preparar para entrega
+make clean
+git status
+git add .
+git commit -m "feat: complete notes app with tests and docker"
+
+====================================================================
+💡 TIP: Mantén este archivo abierto durante el desarrollo para 
+       referencia rápida de comandos.
+====================================================================
