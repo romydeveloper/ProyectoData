@@ -1,20 +1,20 @@
 /**
- * API Service Module
+ * Módulo de Servicios API
  * 
- * Provides HTTP client configuration and API methods for:
- * - Notes CRUD operations
- * - External API integration
- * - Error handling and request/response interceptors
+ * Me proporciona configuración de cliente HTTP y métodos API para:
+ * - Operaciones CRUD de notas
+ * - Integración con API externa
+ * - Manejo de errores e interceptores de petición/respuesta
  */
 
 import axios from 'axios'
 
-// Configuration
+// Configuración de URLs y timeouts
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 const EXTERNAL_API_URL = import.meta.env.VITE_EXTERNAL_API_URL || 'https://jsonplaceholder.typicode.com'
-const REQUEST_TIMEOUT = 10000 // 10 seconds
+const REQUEST_TIMEOUT = 10000 // 10 segundos
 
-// Create axios instances with different configurations
+// Crea instancias de axios con diferentes configuraciones
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
   timeout: REQUEST_TIMEOUT,
@@ -32,31 +32,31 @@ const externalClient = axios.create({
   }
 })
 
-// Request interceptor for API client
+// Interceptor de peticiones para el cliente API
 apiClient.interceptors.request.use(
   (config) => {
-    // Add request timestamp for debugging
+    // Agregar timestamp de petición para debugging
     config.metadata = { startTime: new Date() }
-    console.log(`API Request: ${config.method?.toUpperCase()} ${config.url}`)
+    console.log(`Petición API: ${config.method?.toUpperCase()} ${config.url}`)
     return config
   },
   (error) => {
-    console.error('Request interceptor error:', error)
+    console.error('Error en interceptor de petición:', error)
     return Promise.reject(error)
   }
 )
 
-// Response interceptor for API client
+// Interceptor de respuestas para el cliente API
 apiClient.interceptors.response.use(
   (response) => {
-    // Log response time
+    // Registrar tiempo de respuesta
     const endTime = new Date()
     const duration = endTime - response.config.metadata.startTime
-    console.log(`API Response: ${response.status} ${response.config.url} (${duration}ms)`)
+    console.log(`Respuesta API: ${response.status} ${response.config.url} (${duration}ms)`)
     return response
   },
   (error) => {
-    // Enhanced error handling
+    // Manejo mejorado de errores
     const errorInfo = {
       message: error.message,
       status: error.response?.status,
@@ -65,59 +65,59 @@ apiClient.interceptors.response.use(
       method: error.config?.method
     }
     
-    console.error('API Error:', errorInfo)
+    console.error('Error API:', errorInfo)
     
-    // Transform error for better handling
+    // Transformar error para mejor manejo
     if (error.code === 'ECONNABORTED') {
-      error.message = 'Request timeout. Please try again.'
+      error.message = 'Tiempo de espera agotado. Inténtalo de nuevo.'
     } else if (error.code === 'ERR_NETWORK') {
-      error.message = 'Network error. Please check your connection.'
+      error.message = 'Error de red. Verifica tu conexión.'
     } else if (error.response?.status >= 500) {
-      error.message = 'Server error. Please try again later.'
+      error.message = 'Error del servidor. Inténtalo más tarde.'
     } else if (error.response?.status === 404) {
-      error.message = 'Resource not found.'
+      error.message = 'Recurso no encontrado.'
     } else if (error.response?.status === 400) {
-      error.message = error.response.data?.detail || 'Invalid request data.'
+      error.message = error.response.data?.detail || 'Datos de petición inválidos.'
     }
     
     return Promise.reject(error)
   }
 )
 
-// Utility function to validate note data
+// Función utilitaria para validar datos de nota
 const validateNoteData = (note) => {
   const errors = []
   
   if (!note.title || typeof note.title !== 'string' || !note.title.trim()) {
-    errors.push('Title is required')
+    errors.push('El título es requerido')
   } else if (note.title.length > 120) {
-    errors.push('Title must be 120 characters or less')
+    errors.push('El título debe tener 120 caracteres o menos')
   }
   
   if (!note.content || typeof note.content !== 'string' || !note.content.trim()) {
-    errors.push('Content is required')
+    errors.push('El contenido es requerido')
   } else if (note.content.length > 10000) {
-    errors.push('Content must be 10,000 characters or less')
+    errors.push('El contenido debe tener 10,000 caracteres o menos')
   }
   
   if (note.tags && !Array.isArray(note.tags)) {
-    errors.push('Tags must be an array')
+    errors.push('Las etiquetas deben ser un array')
   }
   
   if (errors.length > 0) {
-    throw new Error(`Validation failed: ${errors.join(', ')}`)
+    throw new Error(`Validación fallida: ${errors.join(', ')}`)
   }
 }
 
-// Notes API with enhanced error handling and validation
+// API de notas con manejo mejorado de errores y validación
 export const notesAPI = {
   /**
-   * Get all notes with pagination and search
-   * @param {number} page - Page number (1-based)
-   * @param {number} perPage - Items per page
-   * @param {string} search - Search term
-   * @param {boolean} archived - Filter by archived status
-   * @returns {Promise<Object>} Notes list response
+   * Obtener todas las notas con paginación y búsqueda
+   * @param {number} page - Número de página (basado en 1)
+   * @param {number} perPage - Elementos por página
+   * @param {string} search - Término de búsqueda
+   * @param {boolean} archived - Filtrar por estado archivado
+   * @returns {Promise<Object>} Respuesta con lista de notas
    */
   async getAll(page = 1, perPage = 10, search = '', archived = null) {
     try {

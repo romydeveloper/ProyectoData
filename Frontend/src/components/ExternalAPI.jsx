@@ -1,36 +1,44 @@
-import { useState, useEffect } from 'react'
-import { pokemonApi } from '../services/externalApi'
+// Componente para demostrar integración con API externa (PokéAPI)
+import { useState, useEffect } from 'react'  // Hooks de React
+import { pokemonApi } from '../services/externalApi'  // Servicio para consumir PokéAPI
 
+// Componente que muestra datos de Pokémon desde una API externa
 function ExternalAPI() {
-  const [pokemon, setPokemon] = useState([])
-  const [pokemonDetails, setPokemonDetails] = useState({})
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
-  const [page, setPage] = useState(0)
-  const [limit] = useState(20)
+  // Estados del componente
+  const [pokemon, setPokemon] = useState([])  // Lista básica de Pokémon
+  const [pokemonDetails, setPokemonDetails] = useState({})  // Detalles cargados por demanda
+  const [loading, setLoading] = useState(false)  // Estado de carga
+  const [error, setError] = useState(null)  // Errores de la API
+  const [page, setPage] = useState(0)  // Página actual (basada en 0)
+  const [limit] = useState(20)  // Pokémon por página
 
+  // Cargar Pokémon cuando cambia la página
   useEffect(() => {
     loadPokemon()
   }, [page])
 
+  // Función principal para cargar lista de Pokémon
   const loadPokemon = async () => {
     try {
       setLoading(true)
       setError(null)
+      
+      // Obtener lista básica de Pokémon con paginación
       const data = await pokemonApi.getPokemon(limit, page * limit)
       setPokemon(data.results || [])
       
-      // Load details for first few pokemon
+      // Cargar detalles de los primeros 6 Pokémon para mejor UX
       const detailsPromises = data.results.slice(0, 6).map(async (poke) => {
         try {
           const details = await pokemonApi.getPokemonDetails(poke.name)
           return { name: poke.name, details }
         } catch (err) {
-          console.error(`Error loading ${poke.name}:`, err)
+          console.error(`Error cargando ${poke.name}:`, err)
           return { name: poke.name, details: null }
         }
       })
       
+      // Procesar resultados y crear mapa de detalles
       const detailsResults = await Promise.all(detailsPromises)
       const detailsMap = {}
       detailsResults.forEach(({ name, details }) => {
@@ -38,7 +46,7 @@ function ExternalAPI() {
       })
       setPokemonDetails(detailsMap)
     } catch (err) {
-      setError('Error loading Pokémon data')
+      setError('Error cargando datos de Pokémon')
       console.error(err)
     } finally {
       setLoading(false)

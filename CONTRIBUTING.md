@@ -3,33 +3,38 @@
 ## Cómo Contribuir
 
 ### Prerrequisitos
-[LISTA: Qué necesita alguien para contribuir]
 - Docker y Docker Compose
-- [AGREGA: Node.js versión X]
-- [AGREGA: Python versión X]
-- [AGREGA: Git]
+- Node.js 18+ y npm
+- Python 3.8+ y pip
+- Git
+- Editor de código (recomendado: VS Code)
 
 ### Configuración del Entorno de Desarrollo
 
 1. **Clonar el repositorio**
    ```bash
-   git clone [URL-DEL-REPO]
-   cd ProyectoData
+   git clone https://github.com/romydeveloper/notes-app-full-stack-proyect
+   cd notes-app-full-stack-proyect
    ```
 
 2. **Configurar variables de entorno**
    ```bash
    cp .env.example .env
-   # [INSTRUCCIÓN: Editar .env según necesidades]
+   # Editar .env si es necesario (valores por defecto funcionan para desarrollo)
    ```
 
 3. **Levantar la aplicación**
    ```bash
    # Opción 1: Docker (recomendado)
+   docker-compose up --build
+   # o usar Makefile
    make up
    
    # Opción 2: Desarrollo local
-   # [AGREGA: Instrucciones específicas para tu setup]
+   # Backend
+   cd Backend && pip install -r requirements.txt && uvicorn main:app --reload
+   # Frontend (nueva terminal)
+   cd Frontend && npm install && npm run dev
    ```
 
 ### Flujo de Desarrollo
@@ -40,8 +45,15 @@
    ```
 
 2. **Hacer cambios**
-   - [INSTRUCCIÓN: Dónde hacer cambios de backend]
-   - [INSTRUCCIÓN: Dónde hacer cambios de frontend]
+   - **Backend**: Modificar archivos en `Backend/`
+     - `main.py` - Endpoints y lógica de API
+     - `database.py` - Modelos y configuración de BD
+     - `test_main.py` - Tests del backend
+   - **Frontend**: Modificar archivos en `Frontend/src/`
+     - `components/` - Componentes React
+     - `hooks/` - Custom hooks
+     - `services/` - Lógica de API calls
+     - `App.jsx` - Componente principal
 
 3. **Ejecutar tests**
    ```bash
@@ -79,24 +91,30 @@ Usamos [Conventional Commits](https://www.conventionalcommits.org/):
 
 #### Código
 **Backend (Python)**:
-- [AGREGA: Tus convenciones de Python]
-- [EJEMPLO: Usar snake_case para variables]
-- [EJEMPLO: Docstrings para funciones]
+- Usar snake_case para variables y funciones
+- PascalCase para clases
+- Docstrings para funciones públicas
+- Type hints cuando sea posible
+- Máximo 88 caracteres por línea
 
 **Frontend (JavaScript/React)**:
-- [AGREGA: Tus convenciones de JS/React]
-- [EJEMPLO: Usar camelCase para variables]
-- [EJEMPLO: Componentes en PascalCase]
+- camelCase para variables y funciones
+- PascalCase para componentes
+- Usar hooks funcionales sobre class components
+- Comentarios JSX con {/* */}
+- Props destructuring en componentes
 
 ### Estructura del Proyecto
 
 ```
 ProyectoData/
-├── Backend/           # [DESCRIBE: Qué contiene]
-├── Frontend/          # [DESCRIBE: Qué contiene]
-├── docker-compose.yml # [DESCRIBE: Para qué sirve]
-├── Makefile          # [DESCRIBE: Comandos disponibles]
-└── docs/             # [DESCRIBE: Documentación]
+├── Backend/           # API FastAPI, modelos, tests
+├── Frontend/          # Aplicación React, componentes, hooks
+├── docker-compose.yml # Configuración de contenedores
+├── Makefile          # Comandos automatizados
+├── README.md         # Documentación principal
+├── CHANGELOG.md      # Historial de cambios
+└── CONTRIBUTING.md   # Esta guía
 ```
 
 ### Testing
@@ -106,16 +124,20 @@ ProyectoData/
 cd Backend
 python -m pytest -v
 ```
-- [INSTRUCCIÓN: Dónde agregar nuevos tests]
-- [INSTRUCCIÓN: Cómo escribir tests]
+- Agregar tests en Backend/test_*.py
+- Seguir el patrón de tests existentes
+- Usar fixtures para datos de prueba
+- Testear casos de éxito y error
 
 #### Frontend
 ```bash
 cd Frontend
 npm test
 ```
-- [INSTRUCCIÓN: Dónde agregar nuevos tests]
-- [INSTRUCCIÓN: Qué tipo de tests escribir]
+- Agregar tests en src/**/*.test.js
+- Testear componentes con @testing-library/react
+- Mockear llamadas a APIs
+- Testear interacciones de usuario
 
 ### Herramientas de Desarrollo
 
@@ -136,19 +158,29 @@ make clean        # Limpiar contenedores
 ### Reportar Issues
 
 Si encuentras un bug:
-1. [INSTRUCCIÓN: Verificar que no existe ya]
-2. [INSTRUCCIÓN: Crear issue con template]
-3. [INSTRUCCIÓN: Incluir información específica]
+1. Verificar que no existe un issue similar
+2. Crear un nuevo issue con:
+   - Descripción clara del problema
+   - Pasos para reproducir
+   - Comportamiento esperado vs actual
+   - Screenshots si aplica
 
 ### Solicitar Features
 
 Para nuevas funcionalidades:
-1. [INSTRUCCIÓN: Discutir primero en issues]
-2. [INSTRUCCIÓN: Explicar el caso de uso]
-3. [INSTRUCCIÓN: Proponer implementación]
+1. Crear un issue de tipo "Feature Request"
+2. Explicar el caso de uso y beneficio
+3. Proponer una implementación si es posible
+4. Discutir antes de empezar a desarrollar
 
 ### Preguntas
 
 Si tienes preguntas:
-- [CONTACTO: Cómo contactarte]
-- [RECURSOS: Documentación adicional]
+- Crear un issue con la etiqueta "question"
+- Revisar la documentación en README.md
+- Consultar la documentación de la API en /docs
+
+### Contacto
+
+- **GitHub**: [@romydeveloper](https://github.com/romydeveloper)
+- **Proyecto**: [notes-app-full-stack-proyect](https://github.com/romydeveloper/notes-app-full-stack-proyect)

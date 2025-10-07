@@ -1,91 +1,105 @@
-import { useState, useEffect, useCallback, useMemo } from 'react'
-import { notesAPI } from '../services/api'
-import NotesList from './NotesList'
-import NoteForm from './NoteForm'
-import Modal from './Modal'
+// Componente principal para la gestión de notas
+import { useState, useEffect, useCallback, useMemo } from 'react'  // Hooks de React
+import { notesAPI } from '../services/api'  // Servicio API para operaciones de notas
+import NotesList from './NotesList'  // Componente lista de notas
+import NoteForm from './NoteForm'  // Formulario para crear/editar notas
+import Modal from './Modal'  // Componente modal reutilizable
 
 /**
- * NotesApp - Main component for notes management
+ * NotesApp - Componente principal para la gestión de notas
  * 
- * Features:
- * - CRUD operations for notes
- * - Search functionality
- * - Pagination
- * - Error handling and loading states
- * - Accessibility support
+ * Características:
+ * - Operaciones CRUD para notas
+ * - Funcionalidad de búsqueda con debounce
+ * - Paginación de resultados
+ * - Manejo de errores y estados de carga
+ * - Soporte de accesibilidad
+ * - Reintentos automáticos en errores de red
  */
 function NotesApp() {
-  // State management
-  const [notes, setNotes] = useState([])
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
-  const [search, setSearch] = useState('')
-  const [page, setPage] = useState(1)
-  const [totalPages, setTotalPages] = useState(1)
-  const [total, setTotal] = useState(0)
-  const [showModal, setShowModal] = useState(false)
-  const [editingNote, setEditingNote] = useState(null)
-  const [retryCount, setRetryCount] = useState(0)
+  // Gestión de estado del componente
+  // Estados principales de la aplicación
+  const [notes, setNotes] = useState([])  // Lista de notas cargadas
+  const [loading, setLoading] = useState(false)  // Estado de carga
+  const [error, setError] = useState(null)  // Mensajes de error
+  const [search, setSearch] = useState('')  // Término de búsqueda actual
+  
+  // Estados de paginación
+  const [page, setPage] = useState(1)  // Página actual
+  const [totalPages, setTotalPages] = useState(1)  // Total de páginas
+  const [total, setTotal] = useState(0)  // Total de notas
+  
+  // Estados del modal y edición
+  const [showModal, setShowModal] = useState(false)  // Visibilidad del modal
+  const [editingNote, setEditingNote] = useState(null)  // Nota en edición (null = crear nueva)
+  const [retryCount, setRetryCount] = useState(0)  // Contador de reintentos
 
-  const perPage = 10
-  const maxRetries = 3
+  // Constantes de configuración
+  const perPage = 10  // Notas por página
+  const maxRetries = 3  // Máximo número de reintentos
 
-  // Memoized search debounce
+  // Búsqueda con debounce para evitar demasiadas peticiones
   const debouncedSearch = useMemo(() => {
     const timeoutId = setTimeout(() => {
       if (page !== 1) {
-        setPage(1) // Reset to first page on new search
+        setPage(1) // Reiniciar a la primera página en nueva búsqueda
       } else {
         loadNotes()
       }
-    }, 300)
+    }, 300)  // Esperar 300ms después del último cambio
     
-    return () => clearTimeout(timeoutId)
+    return () => clearTimeout(timeoutId)  // Limpiar timeout anterior
   }, [search])
 
+  // Ejecutar búsqueda debounced cuando cambia el término
   useEffect(() => {
     debouncedSearch
   }, [debouncedSearch])
 
+  // Cargar notas cuando cambia la página
   useEffect(() => {
     loadNotes()
   }, [page])
 
+  // Función principal para cargar notas con manejo robusto de errores
   const loadNotes = useCallback(async (showLoadingSpinner = true) => {
     try {
+      // Mostrar spinner solo si se solicita (evita parpadeos en reintentos)
       if (showLoadingSpinner) {
         setLoading(true)
       }
-      setError(null)
+      setError(null)  // Limpiar errores previos
       
+      // Realizar petición a la API
       const data = await notesAPI.getAll(page, perPage, search)
       
+      // Actualizar estados con los datos recibidos
       setNotes(data.notes || [])
       setTotalPages(data.total_pages || Math.ceil((data.total || 0) / perPage))
       setTotal(data.total || 0)
-      setRetryCount(0) // Reset retry count on success
+      setRetryCount(0) // Reiniciar contador de reintentos en éxito
       
     } catch (err) {
-      console.error('Error loading notes:', err)
+      console.error('Error cargando notas:', err)
       
-      // Determine error message based on error type
-      let errorMessage = 'Failed to load notes'
+      // Determinar mensaje de error basado en el tipo de error
+      let errorMessage = 'Error al cargar las notas'
       if (err.response?.status === 404) {
-        errorMessage = 'No notes found'
+        errorMessage = 'No se encontraron notas'
       } else if (err.response?.status >= 500) {
-        errorMessage = 'Server error. Please try again later.'
+        errorMessage = 'Error del servidor. Inténtalo más tarde.'
       } else if (!navigator.onLine) {
-        errorMessage = 'No internet connection. Please check your network.'
+        errorMessage = 'Sin conexión a internet. Verifica tu red.'
       }
       
       setError(errorMessage)
       
-      // Auto-retry logic for network errors
+      // Lógica de reintentos automáticos para errores de red
       if (retryCount < maxRetries && (err.code === 'NETWORK_ERROR' || !navigator.onLine)) {
         setTimeout(() => {
           setRetryCount(prev => prev + 1)
-          loadNotes(false)
-        }, 2000 * (retryCount + 1)) // Exponential backoff
+          loadNotes(false)  // Reintentar sin mostrar spinner
+        }, 2000 * (retryCount + 1)) // Backoff exponencial
       }
       
     } finally {
@@ -95,25 +109,29 @@ function NotesApp() {
     }
   }, [page, perPage, search, retryCount])
 
+  // Manejar cambios en la búsqueda con sanitización
   const handleSearch = useCallback((searchTerm) => {
-    // Sanitize search input
-    const sanitizedSearch = searchTerm.trim().slice(0, 200) // Max 200 chars
+    // Sanitizar entrada de búsqueda
+    const sanitizedSearch = searchTerm.trim().slice(0, 200) // Máximo 200 caracteres
     setSearch(sanitizedSearch)
-    // Page reset is handled in the debounced effect
+    // El reinicio de página se maneja en el efecto debounced
   }, [])
 
+  // Abrir modal para crear nueva nota
   const handleCreateNote = useCallback(() => {
-    setEditingNote(null)
-    setShowModal(true)
+    setEditingNote(null)  // Limpiar nota en edición
+    setShowModal(true)    // Mostrar modal
   }, [])
 
+  // Abrir modal para editar nota existente
   const handleEditNote = useCallback((note) => {
+    // Validar datos de la nota
     if (!note || !note.id) {
-      console.error('Invalid note data for editing')
+      console.error('Datos de nota inválidos para edición')
       return
     }
-    setEditingNote(note)
-    setShowModal(true)
+    setEditingNote(note)  // Establecer nota a editar
+    setShowModal(true)    // Mostrar modal
   }, [])
 
   const handleSaveNote = useCallback(async (noteData) => {

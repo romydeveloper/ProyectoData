@@ -5,46 +5,70 @@ Todos los cambios notables de este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.0] - [FECHA DE HOY]
+## [1.0.0] - 2025-10-05
 
 ### Added
-- [LISTA: Funcionalidades principales que agregaste]
-  - CRUD completo de notas (crear, leer, actualizar, eliminar)
-  - [AGREGA: Otras funcionalidades del backend]
-  - [AGREGA: Funcionalidades del frontend]
-  - [AGREGA: Integración con API externa]
-  - [AGREGA: Otras características]
 
-- [LISTA: Funcionalidades técnicas]
-  - Docker Compose para desarrollo y producción
-  - [AGREGA: Tests implementados]
-  - [AGREGA: Documentación]
-  - [AGREGA: Scripts de automatización]
+#### Backend (FastAPI)
+- CRUD completo de notas (crear, leer, actualizar, eliminar)
+- API REST con documentación automática (OpenAPI/Swagger)
+- Paginación y búsqueda de notas
+- Validación de datos con Pydantic
+- Base de datos SQLite con SQLAlchemy ORM
+- Health check endpoint para monitoreo
+- Tests unitarios con pytest
+- Explorador de base de datos (explore_db.py)
+
+#### Frontend (React + Vite)
+- Interfaz de usuario responsive y moderna
+- Gestión de notas con modales para crear/editar
+- Búsqueda en tiempo real y paginación
+- Integración con PokéAPI
+- Tema claro/oscuro con persistencia
+- Custom hooks (useNotes, useTheme)
+- Componentes modulares y reutilizables
+
+#### DevOps y Herramientas
+- Docker Compose para desarrollo y producción
+- Nginx como proxy reverso
+- Scripts de automatización (start.bat, start.sh)
+- Makefile para comandos simplificados
+- Documentación completa
 
 ### Changed
-- [SI APLICA: Cambios en funcionalidades existentes]
+- [SI APLICA en un futuro: Cambios en funcionalidades existentes]
 
 ### Deprecated
-- [SI APLICA: Funcionalidades que serán removidas]
+- [SI APLICA en un futuro: Funcionalidades que serán removidas]
 
 ### Removed
-- [SI APLICA: Funcionalidades removidas]
+- [SI APLICA en un futuro: Funcionalidades removidas]
 
 ### Fixed
-- [SI APLICA: Bugs corregidos durante el desarrollo]
+- [SI APLICA en un futuro: Bugs corregidos durante el desarrollo]
 
 ### Security
-- [LISTA: Medidas de seguridad implementadas]
-  - CORS configurado para desarrollo y producción
-  - [AGREGA: Validación de inputs]
-  - [AGREGA: Otras medidas]
+- CORS configurado para desarrollo y producción
+- Validación de inputs en backend y frontend
+- Sanitización de datos de entrada
+- Manejo seguro de sesiones de base de datos
+- Headers de seguridad básicos
+
+### Technical Decisions
+- FastAPI elegido por velocidad y documentación automática
+- React con Vite para desarrollo rápido
+- SQLite para simplicidad y portabilidad
+- Docker para consistencia entre entornos
+- Arquitectura separada frontend/backend
 
 ## [Unreleased]
 
 ### Planned
-- [LISTA: Funcionalidades que agregarías en el futuro]
-  - Base de datos persistente (SQLite/PostgreSQL)
-  - [AGREGA: Autenticación de usuarios]
-  - [AGREGA: Más tests]
-  - [AGREGA: Mejoras de UI]
-  - [AGREGA: Otras mejoras]
+- Autenticación y autorización de usuarios (JWT)
+- Base de datos PostgreSQL para producción
+- Cache con Redis para mejor rendimiento
+- Tests end-to-end con Cypress
+- CI/CD pipeline con GitHub Actions
+- Exportación de notas (PDF, Markdown)
+- Colaboración en tiempo real
+- API rate limiting y métricas

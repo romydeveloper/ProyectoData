@@ -1,4 +1,4 @@
-# 📝 Instrucciones para Revisar el Proyecto
+# 📝 Instrucciones para Prueba Técnica
 
 ## 🚀 Inicio Rápido
 

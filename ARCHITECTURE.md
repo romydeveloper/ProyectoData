@@ -106,7 +106,7 @@ GET /docs - Documentación automática de la API]
 
 ### 3. Capa de Datos
 **Almacenamiento**: SQLite (notes.db)
-**Justificación**: Elegí SQLite por ser una base de datos ligera, sin servidor y perfecta para desarrollo y demos. No requiere instalación adicional, se integra nativamente con Python, persiste los datos entre reinicios del servidor, y es ideal para aplicaciones pequeñas a medianas. Para una prueba técnica, SQLite demuestra conocimiento de bases de datos relacionales sin la complejidad de configurar PostgreSQL o MySQL.
+**Justificación**: Elegí SQLite por ser una base de datos ligera, sin servidor y perfecta para desarrollo y demos. No requiere instalación adicional, se integra nativamente con Python, persiste los datos entre reinicios del servidor, y es ideal para aplicaciones pequeñas a medianas. Para una prueba técnica, SQLite demuestro conocimiento de bases de datos relacionales sin la complejidad de configurar PostgreSQL o MySQL adicional descargue la interfaz visual de SQLite Desktop y la vincule al proyecto para manejar la BD de forma mas profesional.
 
 ## Contratos de API
 

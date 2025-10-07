@@ -1,14 +1,24 @@
+/**
+ * Componente de indicador de carga reutilizable
+ * @param {string} size - Tamaño del spinner ('small', 'medium', 'large')
+ * @param {string} text - Texto a mostrar debajo del spinner
+ */
 const LoadingSpinner = ({ size = 'medium', text = 'Cargando...' }) => {
+  // Clases CSS para diferentes tamaños del spinner
   const sizeClasses = {
-    small: 'w-4 h-4',
-    medium: 'w-8 h-8',
-    large: 'w-12 h-12'
+    small: 'w-4 h-4',    // 16x16px
+    medium: 'w-8 h-8',   // 32x32px
+    large: 'w-12 h-12'   // 48x48px
   }
 
   return (
+    // Contenedor centrado con roles de accesibilidad
     <div className="flex flex-col items-center justify-center py-8" role="status" aria-live="polite">
+      {/* Spinner animado con tamaño dinámico */}
       <div className={`${sizeClasses[size]} animate-spin`}>
+        {/* SVG del spinner con animación CSS */}
         <svg className="w-full h-full text-blue-600" fill="none" viewBox="0 0 24 24">
+          {/* Círculo de fondo (estático) */}
           <circle
             className="opacity-25"
             cx="12"
@@ -17,6 +27,7 @@ const LoadingSpinner = ({ size = 'medium', text = 'Cargando...' }) => {
             stroke="currentColor"
             strokeWidth="4"
           />
+          {/* Arco que gira (animado) */}
           <path
             className="opacity-75"
             fill="currentColor"
@@ -24,6 +35,7 @@ const LoadingSpinner = ({ size = 'medium', text = 'Cargando...' }) => {
           />
         </svg>
       </div>
+      {/* Texto descriptivo personalizable */}
       <p className="mt-2 text-sm text-gray-600">{text}</p>
     </div>
   )

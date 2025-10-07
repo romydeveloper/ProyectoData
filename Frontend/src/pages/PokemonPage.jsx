@@ -1,44 +1,53 @@
-import { useState, useEffect } from 'react'
-import { pokemonApi } from '../services/externalApi'
-import PokemonCard from '../components/external/PokemonCard'
-import LoadingSpinner from '../components/ui/LoadingSpinner'
-import ErrorMessage from '../components/ui/ErrorMessage'
+// Página para mostrar información de Pokémon usando la PokéAPI
+import { useState, useEffect } from 'react'  // Hooks de React para estado y efectos
+import { pokemonApi } from '../services/externalApi'  // Servicio para consumir PokéAPI
+import PokemonCard from '../components/external/PokemonCard'  // Componente para mostrar cada Pokémon
+import LoadingSpinner from '../components/ui/LoadingSpinner'  // Indicador de carga
+import ErrorMessage from '../components/ui/ErrorMessage'  // Componente para mostrar errores
 
+// Componente principal de la página de Pokémon
 const PokemonPage = () => {
-  const [pokemon, setPokemon] = useState([])
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
-  const [types, setTypes] = useState([])
-  const [selectedType, setSelectedType] = useState('')
-  const [sortBy, setSortBy] = useState('id')
+  // Estados del componente
+  const [pokemon, setPokemon] = useState([])  // Lista de Pokémon cargados
+  const [loading, setLoading] = useState(false)  // Estado de carga
+  const [error, setError] = useState(null)  // Errores de la API
+  const [types, setTypes] = useState([])  // Lista de tipos de Pokémon disponibles
+  const [selectedType, setSelectedType] = useState('')  // Tipo seleccionado para filtrar
+  const [sortBy, setSortBy] = useState('id')  // Criterio de ordenamiento
 
+  // Cargar tipos y Pokémon al montar el componente
   useEffect(() => {
-    loadTypes()
-    loadPokemon()
+    loadTypes()    // Cargar lista de tipos
+    loadPokemon()  // Cargar Pokémon iniciales
   }, [])
 
+  // Recargar Pokémon cuando cambia el tipo seleccionado
   useEffect(() => {
     if (selectedType) {
-      loadPokemonByType()
+      loadPokemonByType()  // Cargar por tipo específico
     } else {
-      loadPokemon()
+      loadPokemon()        // Cargar todos los Pokémon
     }
   }, [selectedType])
 
+  // Cargar lista de tipos de Pokémon disponibles
   const loadTypes = async () => {
     try {
       const data = await pokemonApi.getPokemonTypes()
       setTypes(data.results)
     } catch (err) {
-      console.error('Error loading types:', err)
+      console.error('Error cargando tipos:', err)
     }
   }
 
+  // Cargar Pokémon generales (primeros 20)
   const loadPokemon = async () => {
     setLoading(true)
     setError(null)
     try {
+      // Obtener lista básica de Pokémon
       const data = await pokemonApi.getPokemon(20, 0)
+      // Cargar detalles completos de cada Pokémon en paralelo
       const pokemonWithDetails = await Promise.all(
         data.results.map(async (p) => {
           const details = await pokemonApi.getPokemonDetails(p.name)
@@ -53,11 +62,14 @@ const PokemonPage = () => {
     }
   }
 
+  // Cargar Pokémon filtrados por tipo
   const loadPokemonByType = async () => {
     setLoading(true)
     setError(null)
     try {
+      // Obtener Pokémon del tipo seleccionado
       const data = await pokemonApi.getPokemonByType(selectedType)
+      // Limitar a 20 y cargar detalles completos
       const pokemonWithDetails = await Promise.all(
         data.pokemon.slice(0, 20).map(async (p) => {
           const details = await pokemonApi.getPokemonDetails(p.pokemon.name)
@@ -72,26 +84,30 @@ const PokemonPage = () => {
     }
   }
 
+  // Ordenar Pokémon según el criterio seleccionado
   const sortedPokemon = [...pokemon].sort((a, b) => {
     switch (sortBy) {
       case 'name':
-        return a.name.localeCompare(b.name)
+        return a.name.localeCompare(b.name)  // Orden alfabético
       case 'height':
-        return b.height - a.height
+        return b.height - a.height  // Mayor a menor altura
       case 'weight':
-        return b.weight - a.weight
+        return b.weight - a.weight  // Mayor a menor peso
       default:
-        return a.id - b.id
+        return a.id - b.id  // Por ID (orden numérico)
     }
   })
 
   return (
     <div className="space-y-6">
+      {/* Encabezado de la página */}
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-gray-900">Pokédex</h1>
       </div>
 
+      {/* Controles de filtro y ordenamiento */}
       <div className="flex flex-col sm:flex-row gap-4">
+        {/* Filtro por tipo */}
         <div className="flex-1">
           <label htmlFor="type-filter" className="block text-sm font-medium text-gray-700 mb-2">
             Filtrar por tipo:
@@ -103,6 +119,7 @@ const PokemonPage = () => {
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">Todos los tipos</option>
+            {/* Renderizar opciones de tipos dinámicamente */}
             {types.map((type) => (
               <option key={type.name} value={type.name}>
                 {type.name.charAt(0).toUpperCase() + type.name.slice(1)}
@@ -111,6 +128,7 @@ const PokemonPage = () => {
           </select>
         </div>
 
+        {/* Selector de ordenamiento */}
         <div className="flex-1">
           <label htmlFor="sort-select" className="block text-sm font-medium text-gray-700 mb-2">
             Ordenar por:
@@ -129,11 +147,15 @@ const PokemonPage = () => {
         </div>
       </div>
 
+      {/* Mostrar errores si los hay */}
       {error && <ErrorMessage message={error} />}
 
+      {/* Renderizado condicional: loading o grid de Pokémon */}
       {loading ? (
+        // Mostrar spinner mientras carga
         <LoadingSpinner />
       ) : (
+        // Grid responsivo de tarjetas de Pokémon
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {sortedPokemon.map((p) => (
             <PokemonCard key={p.id} pokemon={p} />

@@ -1,51 +1,66 @@
+// Formulario para crear y editar notas con validación
 import { useState } from 'react'
 
+/**
+ * Componente formulario para crear/editar notas
+ * @param {Object} note - Nota a editar (null para crear nueva)
+ * @param {Function} onSave - Callback al guardar nota
+ * @param {Function} onCancel - Callback al cancelar
+ */
 function NoteForm({ note, onSave, onCancel }) {
+  // Estado del formulario inicializado con datos de la nota o valores vacíos
   const [formData, setFormData] = useState({
     title: note?.title || '',
     content: note?.content || '',
-    tags: note?.tags?.join(', ') || ''
+    tags: note?.tags?.join(', ') || ''  // Convertir array a string separado por comas
   })
-  const [errors, setErrors] = useState({})
+  const [errors, setErrors] = useState({})  // Errores de validación
 
+  // Función de validación del formulario
   const validateForm = () => {
     const newErrors = {}
     
+    // Validar título
     if (!formData.title.trim()) {
-      newErrors.title = 'Title is required'
+      newErrors.title = 'El título es requerido'
     } else if (formData.title.length > 120) {
-      newErrors.title = 'Title must be 120 characters or less'
+      newErrors.title = 'El título debe tener 120 caracteres o menos'
     }
     
+    // Validar contenido
     if (!formData.content.trim()) {
-      newErrors.content = 'Content is required'
+      newErrors.content = 'El contenido es requerido'
     } else if (formData.content.length > 10000) {
-      newErrors.content = 'Content must be 10000 characters or less'
+      newErrors.content = 'El contenido debe tener 10000 caracteres o menos'
     }
     
     setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
+    return Object.keys(newErrors).length === 0  // Retorna true si no hay errores
   }
 
+  // Manejar envío del formulario
   const handleSubmit = (e) => {
-    e.preventDefault()
+    e.preventDefault()  // Prevenir recarga de página
     
-    if (!validateForm()) return
+    if (!validateForm()) return  // No continuar si hay errores
     
+    // Preparar datos de la nota
     const noteData = {
       title: formData.title.trim(),
       content: formData.content.trim(),
       tags: formData.tags
-        .split(',')
-        .map(tag => tag.trim())
-        .filter(tag => tag.length > 0)
+        .split(',')                    // Dividir por comas
+        .map(tag => tag.trim())        // Limpiar espacios
+        .filter(tag => tag.length > 0) // Filtrar tags vacíos
     }
     
-    onSave(noteData)
+    onSave(noteData)  // Llamar callback con los datos
   }
 
+  // Manejar cambios en los campos del formulario
   const handleChange = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }))
+    setFormData(prev => ({ ...prev, [field]: value }))  // Actualizar campo
+    // Limpiar error del campo si existía
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }))
     }
